@@ -11,7 +11,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
     headless: true
   });
   const textToUrl = text =>
-    encodeURI("https://translate.google.com/#auto/en/" + text);
+    "https://translate.google.com/#auto/en/" + encodeURIComponent(text);
 
   bot.on("text", ctx => {
     browser.newPage().then(page =>
