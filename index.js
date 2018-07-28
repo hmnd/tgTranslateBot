@@ -28,13 +28,17 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
             )
             .then(() =>
               page
-                .evaluate(
-                  () =>
-                    document.querySelector("#gt-sl-sugg > div > div:last-child")
-                      .innerText === "English - detected"
-                      ? ""
-                      : document.querySelector("#result_box").innerText
-                )
+                .evaluate(() => {
+                  const lang = document.querySelector(
+                    "#gt-sl-sugg > div > div:last-child"
+                  ).innerText;
+                  const langFormatted = lang.slice(0, lang.indexOf(" -"));
+                  langFormatted === "English"
+                    ? ""
+                    : document.querySelector("#result_box").innerText +
+                      "\n\nDetected language: " +
+                      langFormatted;
+                })
                 .then(text =>
                   ctx
                     .reply(text, Extra.inReplyTo(ctx.message.message_id))
