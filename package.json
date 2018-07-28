@@ -1,0 +1,30 @@
+{
+  "name": "tgtranslatebot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hmnd/tgTranslateBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hmnd/tgTranslateBot/issues"
+  },
+  "homepage": "https://github.com/hmnd/tgTranslateBot#readme",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "puppeteer": "^1.6.1",
+    "telegraf": "^3.22.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1"
+  }
+}
