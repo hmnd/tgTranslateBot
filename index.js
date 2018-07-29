@@ -35,11 +35,11 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
       return "";
     });
     if (text.length > 0) {
-      ctx
+      await ctx
         .replyWithMarkdown(text, Extra.inReplyTo(ctx.message.message_id))
-        .then(page.close())
         .catch(() => {});
     }
+    await page.close();
   });
 
   bot.startPolling();
