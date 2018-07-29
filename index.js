@@ -22,16 +22,17 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
         document.querySelector("#result_box").innerText.indexOf("......") === -1
     );
     const text = await page.evaluate(() => {
-      const lang = document.querySelector("#gt-sl-sugg > div > div:last-child");
-      const langFormatted = lang.innerText.slice(
-        0,
-        lang.innerText.indexOf(" -")
-      );
-      return langFormatted === "English"
-        ? ""
-        : document.querySelector("#result_box").innerText +
-            "\n\nDetected language: " +
-            langFormatted;
+      const lang = document.querySelector("#gt-sl-sugg > div > div:last-child")
+        .innerText;
+      if (lang.includes("-") && !lang.includes("English")) {
+        const langFormatted = lang.slice(0, lang.indexOf(" -"));
+        return (
+          document.querySelector("#result_box").innerText +
+          "\n\nDetected language: " +
+          langFormatted
+        );
+      }
+      return "";
     });
     if (text.length > 0) {
       ctx
