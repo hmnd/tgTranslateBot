@@ -15,7 +15,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 
   bot.on("text", async ctx => {
     const page = await browser.newPage();
-    await page.goto(textToUrl(ctx.message.text), { waitUntil: "networkidle0" });
+    await page.goto(textToUrl(ctx.message.text), { waitUntil: "networkidle0", timeout: 0 });
     await page.waitForFunction(
       () =>
         document.querySelector("#result_box") !== null &&
