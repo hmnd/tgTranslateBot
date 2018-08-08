@@ -60,7 +60,9 @@ const logger = winston.createLogger({
   };
 
   bot.on("text", ctx => {
-    doTranslate(ctx).catch((e) => { logger.error(e) };
+    doTranslate(ctx).catch(e => {
+      logger.error(e);
+    });
   });
 
   bot.startPolling();
