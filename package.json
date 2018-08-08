@@ -19,8 +19,8 @@
   "homepage": "https://github.com/hmnd/tgTranslateBot#readme",
   "dependencies": {
     "dotenv": "^6.0.0",
-    "puppeteer": "^1.6.1",
-    "telegraf": "^3.22.1",
+    "puppeteer": "^1.6.2",
+    "telegraf": "^3.22.2",
     "winston": "^3.0.0"
   },
   "devDependencies": {
