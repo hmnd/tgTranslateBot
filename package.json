@@ -20,7 +20,8 @@
   "dependencies": {
     "dotenv": "^6.0.0",
     "puppeteer": "^1.6.1",
-    "telegraf": "^3.22.1"
+    "telegraf": "^3.22.1",
+    "winston": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

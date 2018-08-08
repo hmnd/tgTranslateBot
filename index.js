@@ -2,8 +2,18 @@ require("dotenv").config();
 const Telegraf = require("telegraf");
 const Extra = require("telegraf/extra");
 const puppeteer = require("puppeteer");
+const winston = require("winston");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
+
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(),
+  transports: [
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" })
+  ]
+});
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -12,10 +22,17 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
   });
   const textToUrl = text =>
     "https://translate.google.com/#auto/en/" + encodeURIComponent(text);
-
-  bot.on("text", async ctx => {
+  const doTranslate = async ctx => {
     const page = await browser.newPage();
-    await page.goto(textToUrl(ctx.message.text), { waitUntil: "networkidle0", timeout: 0 });
+    await page
+      .goto(textToUrl(ctx.message.text), {
+        waitUntil: "networkidle0",
+        timeout: 0
+      })
+      .catch(() => {
+        console.log("failed, retrying");
+        return doTranslate(ctx);
+      });
     await page.waitForFunction(
       () =>
         document.querySelector("#result_box") !== null &&
@@ -40,6 +57,10 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
         .catch(() => {});
     }
     await page.close();
+  };
+
+  bot.on("text", ctx => {
+    doTranslate(ctx).catch((e) => { logger.error(e) };
   });
 
   bot.startPolling();
