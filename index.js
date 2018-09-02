@@ -38,13 +38,13 @@ const logger = winston.createLogger({
         console.log("failed, retrying");
         return doTranslate(inText);
       });
-      await page.waitForFunction(
-        () =>
-        document.querySelector("#result_box") !== null &&
-        document.querySelector("#result_box").innerText.indexOf("......") === -1
-      );
-      const text = await page.evaluate(() => {
-        const lang = document.querySelector("#gt-sl-sugg > div > div:last-child")
+    await page.waitForFunction(
+      () =>
+      document.querySelector("#result_box") !== null &&
+      document.querySelector("#result_box").innerText.indexOf("......") === -1
+    );
+    const text = await page.evaluate(() => {
+      const lang = document.querySelector("#gt-sl-sugg > div > div:last-child")
         .innerText;
       if (lang.includes("-") && !lang.includes("English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
@@ -54,7 +54,6 @@ const logger = winston.createLogger({
           langFormatted
         );
       }
-      await page.close();
       return "";
     });
     await page.close();
