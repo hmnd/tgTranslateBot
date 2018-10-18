@@ -85,8 +85,8 @@ const logger = winston.createLogger({
         }])
       } else {
         ctx.answerInlineQuery([], {
-          switch_pm_text: 'No translation available',
-          switch_pm_parameter: 'no_trans_inline'
+          switch_pm_text: 'The master text did not return any slave translations',
+          switch_pm_parameter: 'no_trans_inline_slave'
         })
       }
     }).catch(e => logger.error(e))
