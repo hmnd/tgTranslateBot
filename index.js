@@ -52,7 +52,7 @@ const textToUrl = (text, lang = "en") =>
       if (lang && isNotSourceLang(lang, "English")) {
         return `${
           document.querySelector("#result_box").innerText
-        }\n\nDetected language: ${langFormatted}`;
+        }\n\nDetected language: ${lang}`;
       }
       return null;
     });
