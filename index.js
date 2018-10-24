@@ -44,7 +44,7 @@ const textToUrl = (text, lang = "en") =>
     );
     const translation = await page.evaluate(() => {
       const isNotSourceLang = (sourceLang, destLang) =>
-        !destLang.includes(sourceLang);
+        !sourceLang.includes(destLang);
       const extractLang = lang => lang.slice(0, lang.indexOf(" -")) || null;
       const lang = document.querySelector("#gt-sl-sugg > div > div:last-child")
         .innerText;
