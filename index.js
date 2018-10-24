@@ -6,16 +6,16 @@ const winston = require("winston");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-const logger = winston.createLogger({
-  level: "info",
-  format: winston.format.json(),
-  transports: [
-    new winston.transports.File({
-      filename: "error.log",
-      level: "error"
-    })
-  ]
-});
+// const logger = winston.createLogger({
+//   level: "info",
+//   format: winston.format.json(),
+//   transports: [
+//     new winston.transports.File({
+//       filename: "error.log",
+//       level: "error"
+//     })
+//   ]
+// });
 
 const textToUrl = (text, lang) =>
   `https://translate.google.com/#auto/${lang}/${encodeURIComponent(text)}`;
