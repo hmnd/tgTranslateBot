@@ -17,7 +17,7 @@ const logger = winston.createLogger({
   ]
 });
 
-const textToUrl = (text, lang) =>
+const textToUrl = (text, lang = "en") =>
   `https://translate.google.com/#auto/${lang}/${encodeURIComponent(text)}`;
 
 const isSourceLang = (sourceLang, destLang) =>
@@ -35,7 +35,7 @@ const isSourceLang = (sourceLang, destLang) =>
         waitUntil: "networkidle0",
         timeout: 0
       })
-      .catch(() => translateText(inText));
+      .catch(e => logger.error(e).then(translateText(inText)));
     await page.waitForFunction(
       () =>
         document.querySelector("#result_box") !== null &&
