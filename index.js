@@ -13,56 +13,50 @@ const logger = winston.createLogger({
     new winston.transports.File({
       filename: "error.log",
       level: "error"
-    }),
-    new winston.transports.File({
-      filename: "combined.log"
     })
   ]
 });
+
+const textToUrl = (text, lang) =>
+  `https://translate.google.com/#auto/${lang}/${encodeURIComponent(text)}`;
+
+const isSourceLang = (sourceLang, destLang) => destLang.includes("-") && !destLang.includes(sourceLang)
 
 (async () => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     headless: true
   });
-  const textToUrl = text =>
-    "https://translate.google.com/#auto/en/" + encodeURIComponent(text);
-  const doTranslate = async inText => {
+  const translateText = async inText => {
     const page = await browser.newPage();
     await page
       .goto(textToUrl(inText), {
         waitUntil: "networkidle0",
         timeout: 0
       })
-      .catch(() => {
-        console.log("failed, retrying");
-        return doTranslate(inText);
-      });
+      .catch(() => translateText(inText));
     await page.waitForFunction(
       () =>
       document.querySelector("#result_box") !== null &&
       document.querySelector("#result_box").innerText.indexOf("......") === -1
     );
-    const text = await page.evaluate(() => {
+    const translation = await page.evaluate(() => {
       const lang = document.querySelector("#gt-sl-sugg > div > div:last-child")
-        .innerText;
-      if (lang.includes("-") && !lang.includes("English")) {
+        .innerText.slice(0, lang.indexOf(" -")) || null;
+      const text;
+      if (isSourceLang(lang, "English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
-        return (
-          document.querySelector("#result_box").innerText +
-          "\n\nDetected language: " +
-          langFormatted
-        );
+        return `${document.querySelector("#result_box").innerText}\n\nDetected language: ${langFormatted}`
       }
-      return "";
+      return null;
     });
     await page.close();
-    return text
+    return translation
   };
 
   bot.on("text", ctx => {
-    doTranslate(ctx.message.text).then(translation => {
-      if (translation.length > 0) {
+    translateText(ctx.message.text).then(translation => {
+      if (translation) {
         ctx
           .replyWithMarkdown(translation, Extra.inReplyTo(ctx.message.message_id))
           .catch(e => logger.error(e));
@@ -71,22 +65,32 @@ const logger = winston.createLogger({
   });
 
   bot.on("inline_query", ctx => {
-    doTranslate(ctx.inlineQuery.query).then(translation => {
-      if (translation.length > 0) {
+    translateText(ctx.inlineQuery.query).then(translation => {
+      if (translation) {
         ctx.answerInlineQuery([{
           type: 'article',
           id: 0,
           title: 'Translation',
-          description: translation,
+          description: 'Sends translation and detected language.',
           input_message_content: {
             message_text: translation,
+            parse_mode: Extra.markdown
+          }
+        },
+        {
+          type: 'article',
+          id: 1,
+          title: 'Translation - with translated text',
+          description: `Sends translated text, translation, and detected language.`,
+          input_message_content: {
+            message_text: `**Translated**: ${ctx.inlineQuery.query}\n**Translation: ${translation}`,
             parse_mode: Extra.markdown
           }
         }])
       } else {
         ctx.answerInlineQuery([], {
-          switch_pm_text: 'The master text did not return any slave translations',
-          switch_pm_parameter: 'no_trans_inline_slave'
+          switch_pm_text: 'No translation found for inputted text.',
+          switch_pm_parameter: 'no_trans_inline'
         })
       }
     }).catch(e => logger.error(e))
