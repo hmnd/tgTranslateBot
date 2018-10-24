@@ -52,10 +52,10 @@ const textToUrl = (text, lang = "en") =>
         return null;
       }
       const langName = extractLang(lang);
-      if (lang && isNotSourceLang(lang, "English")) {
+      if (langName && isNotSourceLang(lang, "English")) {
         return `${
           document.querySelector("#result_box").innerText
-        }\n\nDetected language: ${lang}`;
+        }\n\nDetected language: ${langName}`;
       }
       return null;
     });
