@@ -38,10 +38,10 @@ const textToUrl = (text, lang = "en") =>
         document.querySelector("#result_box") !== null &&
         document.querySelector("#result_box").innerText.indexOf("......") === -1
     );
-    const isSourceLang = (sourceLang, destLang) =>
-      !destLang.includes(sourceLang);
-    const extractLang = (lang) => lang.slice(0, lang.indexOf(" -")) || null;
     const translation = await page.evaluate(() => {
+      const isSourceLang = (sourceLang, destLang) =>
+        !destLang.includes(sourceLang);
+      const extractLang = (lang) => lang.slice(0, lang.indexOf(" -")) || null;
       const lang = extractLang(document.querySelector(
           "#gt-sl-sugg > div > div:last-child"
         ).innerText);
