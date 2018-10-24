@@ -94,9 +94,9 @@ const textToUrl = (text, lang = "en") =>
               title: "Translation - with translated text",
               description: `Sends translated text, translation, and detected language.`,
               input_message_content: {
-                message_text: `**Translated**: ${
+                message_text: `*Translated*: ${
                   ctx.inlineQuery.query
-                }\n**Translation**: ${translation}`,
+                }\n*Translation*: ${translation}`,
                 parse_mode: Extra.markdown
               }
             }
