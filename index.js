@@ -40,13 +40,11 @@ const textToUrl = (text, lang = "en") =>
     );
     const isSourceLang = (sourceLang, destLang) =>
       !destLang.includes(sourceLang);
+    const extractLang = (lang) => lang.slice(0, lang.indexOf(" -")) || null;
     const translation = await page.evaluate(() => {
-      const lang = () => {
-        const langText = document.querySelector(
+      const lang = extractLang(document.querySelector(
           "#gt-sl-sugg > div > div:last-child"
-        ).innerText;
-        return langText.slice(0, langText.indexOf(" -")) || null;
-      };
+        ).innerText);
       if (isSourceLang(lang, "English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
         return `${
