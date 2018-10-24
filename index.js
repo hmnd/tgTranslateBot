@@ -20,9 +20,6 @@ const logger = winston.createLogger({
 const textToUrl = (text, lang = "en") =>
   `https://translate.google.com/#auto/${lang}/${encodeURIComponent(text)}`;
 
-const isSourceLang = (sourceLang, destLang) =>
-  destLang.includes("-") && !destLang.includes(sourceLang);
-
 (async () => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
@@ -41,11 +38,15 @@ const isSourceLang = (sourceLang, destLang) =>
         document.querySelector("#result_box") !== null &&
         document.querySelector("#result_box").innerText.indexOf("......") === -1
     );
+    const isSourceLang = (sourceLang, destLang) =>
+      !destLang.includes(sourceLang);
     const translation = await page.evaluate(() => {
-      const lang =
-        document
-          .querySelector("#gt-sl-sugg > div > div:last-child")
-          .innerText.slice(0, lang.indexOf(" -")) || null;
+      const lang = () => {
+        const langText = document.querySelector(
+          "#gt-sl-sugg > div > div:last-child"
+        ).innerText;
+        return langText.slice(0, langText.indexOf(" -")) || null;
+      };
       if (isSourceLang(lang, "English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
         return `${
