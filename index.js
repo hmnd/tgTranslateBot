@@ -43,7 +43,6 @@ const isSourceLang = (sourceLang, destLang) => destLang.includes("-") && !destLa
     const translation = await page.evaluate(() => {
       const lang = document.querySelector("#gt-sl-sugg > div > div:last-child")
         .innerText.slice(0, lang.indexOf(" -")) || null;
-      const text;
       if (isSourceLang(lang, "English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
         return `${document.querySelector("#result_box").innerText}\n\nDetected language: ${langFormatted}`
