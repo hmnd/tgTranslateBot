@@ -41,10 +41,10 @@ const textToUrl = (text, lang = "en") =>
     const translation = await page.evaluate(() => {
       const isSourceLang = (sourceLang, destLang) =>
         !destLang.includes(sourceLang);
-      const extractLang = (lang) => lang.slice(0, lang.indexOf(" -")) || null;
-      const lang = extractLang(document.querySelector(
-          "#gt-sl-sugg > div > div:last-child"
-        ).innerText);
+      const extractLang = lang => lang.slice(0, lang.indexOf(" -")) || null;
+      const lang = extractLang(
+        document.querySelector("#gt-sl-sugg > div > div:last-child").innerText
+      );
       if (isSourceLang(lang, "English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
         return `${
@@ -97,7 +97,7 @@ const textToUrl = (text, lang = "en") =>
                 message_text: `*Translated*: ${
                   ctx.inlineQuery.query
                 }\n*Translation*: ${translation}`,
-                parse_mode: Extra.markdown
+                parse_mode: "Markdown"
               }
             }
           ]);
