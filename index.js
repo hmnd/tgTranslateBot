@@ -13,6 +13,10 @@ const logger = winston.createLogger({
     new winston.transports.File({
       filename: "error.log",
       level: "error"
+    }),
+    new winston.transports.File({
+      filename: "debug.log",
+      "level": "debug"
     })
   ]
 });
@@ -40,11 +44,12 @@ const textToUrl = (text, lang = "en") =>
     );
     const translation = await page.evaluate(() => {
       const isNotSourceLang = (sourceLang, destLang) =>
-        !destLang === "Detect language" && !destLang.includes(sourceLang);
+        destLang.includes("-") && !destLang.includes(sourceLang);
       const extractLang = lang => lang.slice(0, lang.indexOf(" -")) || null;
       const lang = extractLang(
         document.querySelector("#gt-sl-sugg > div > div:last-child").innerText
       );
+      logger.debug("lang");
       if (isNotSourceLang(lang, "English")) {
         const langFormatted = lang.slice(0, lang.indexOf(" -"));
         return `${
