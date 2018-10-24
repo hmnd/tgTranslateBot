@@ -98,7 +98,7 @@ const textToUrl = (text, lang = "en") =>
               input_message_content: {
                 message_text: `**Translated**: ${
                   ctx.inlineQuery.query
-                }\n**Translation: ${translation}`,
+                }\n**Translation**: ${translation}`,
                 parse_mode: Extra.markdown
               }
             }
