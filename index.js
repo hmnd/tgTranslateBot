@@ -39,8 +39,8 @@ const textToUrl = (text, lang = "en") =>
       .catch(e => logger.error(e).then(translateText(inText)));
     await page.waitForFunction(
       () =>
-        document.querySelector("#result_box") !== null &&
-        document.querySelector("#result_box").innerText.indexOf("......") === -1
+      document.querySelector("#result_box") !== null &&
+      document.querySelector("#result_box").innerText.indexOf("......") === -1
     );
     const translation = await page.evaluate(() => {
       const isNotSourceLang = (sourceLang, destLang) =>
@@ -64,18 +64,20 @@ const textToUrl = (text, lang = "en") =>
   };
 
   bot.on("text", ctx => {
-    translateText(ctx.message.text)
-      .then(translation => {
-        if (translation) {
-          ctx
-            .replyWithMarkdown(
-              translation,
-              Extra.inReplyTo(ctx.message.message_id)
-            )
-            .catch(e => logger.error(e));
-        }
-      })
-      .catch(e => logger.error(e));
+    ctx.replyWithChatAction("typing").then(() => {
+      translateText(ctx.message.text)
+        .then(translation => {
+          if (translation) {
+            ctx
+              .replyWithMarkdown(
+                translation,
+                Extra.inReplyTo(ctx.message.message_id)
+              )
+              .catch(e => logger.error(e));
+          }
+        })
+        .catch(e => logger.error(e));
+    })
   });
 
   bot.on("inline_query", ctx => {
@@ -83,8 +85,7 @@ const textToUrl = (text, lang = "en") =>
       .catch(e => logger.error(e))
       .then(translation => {
         if (translation) {
-          ctx.answerInlineQuery([
-            {
+          ctx.answerInlineQuery([{
               type: "article",
               id: 0,
               title: "Translation",
