@@ -30,7 +30,7 @@ const textToUrl = (text, lang = "en") =>
     headless: true
   });
   const translateText = async inText => {
-    if (inText.trim().length > 0) {
+    if (!inText.trim().length) {
       return null;
     }
     const page = await browser.newPage();
