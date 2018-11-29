@@ -27,7 +27,7 @@ const textToUrl = (text, lang = "en") =>
 (async () => {
   const browser = await puppeteer.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    headless: false
+    headless: true
   });
   const translateText = async inText => {
     if (inText.trim().length > 0) {
