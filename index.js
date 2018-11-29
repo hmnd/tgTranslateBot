@@ -51,7 +51,7 @@ const textToUrl = (text, lang = "en") =>
       const extractLang = lang => lang.slice(0, lang.indexOf(" -")) || null;
       const lang = document.querySelector("div.sl-sugg-button-container > div:first-child")
         .innerText;
-      if (lang === "Detect language") {
+      if (lang === "DETECT LANGUAGE") {
         return null;
       }
       const langName = extractLang(lang);
