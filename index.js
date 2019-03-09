@@ -3,6 +3,7 @@ const Telegraf = require("telegraf");
 const Extra = require("telegraf/extra");
 const puppeteer = require("puppeteer");
 const winston = require("winston");
+const titleCase = require("title-case");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -56,9 +57,11 @@ const textToUrl = (text, lang = "en") =>
       }
       const langName = extractLang(lang);
       if (langName && isNotSourceLang(lang, "ENGLISH")) {
-        return `${
-          document.querySelector("span.tlid-translation").innerText
-        }\n\nDetected language: ${langName.charAt(0) + langName.slice(1).toLowerCase()}`;
+        return {
+          from: lang,
+          to: "ENGLISH",
+          text: `${document.querySelector("span.tlid-translation").innerText}\n\nDetected language: ${langName.charAt(0) + langName.slice(1).toLowerCase()}`
+        };
       }
       return null;
     });
@@ -72,7 +75,7 @@ const textToUrl = (text, lang = "en") =>
         if (translation) {
           ctx
             .replyWithMarkdown(
-              translation,
+              translation.text,
               Extra.inReplyTo(ctx.message.message_id)
             )
             .catch(e => logger.error(e));
@@ -89,10 +92,10 @@ const textToUrl = (text, lang = "en") =>
           ctx.answerInlineQuery([{
               type: "article",
               id: 0,
-              title: "Translation",
-              description: "Sends translation and detected language.",
+              title: `Translation (${titleCase(translation.from)} => ${titleCase(translation.to)})`,
+              description: translation.text,
               input_message_content: {
-                message_text: translation,
+                message_text: translation.text,
                 parse_mode: Extra.markdown
               }
             },
@@ -104,7 +107,7 @@ const textToUrl = (text, lang = "en") =>
               input_message_content: {
                 message_text: `*Translated*: ${
                   ctx.inlineQuery.query
-                }\n*Translation*: ${translation}`,
+                }\n*Translation*: ${translation.text}`,
                 parse_mode: "Markdown"
               }
             }
