@@ -119,7 +119,7 @@ for (const token of tokens) {
                 title: 'Translation - with translated text',
                 description: `Sends translated text, translation, and detected language.`,
                 input_message_content: {
-                  message_text: `*Translated*: ${
+                  message_text: `*Original*: ${
                     ctx.inlineQuery.query
                   }\n*Translation*: ${translation.text}`,
                   parse_mode: 'Markdown'
