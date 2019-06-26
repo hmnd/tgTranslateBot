@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 const winston = require('winston');
 const titleCase = require('title-case');
 
-const tokens = process.env.BOT_TOKEN.split(',');
+const tokens = (process.env.BOT_TOKEN || []).split(',');
 
 const logger = winston.createLogger({
   level: 'info',
