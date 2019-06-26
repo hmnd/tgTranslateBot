@@ -13,29 +13,28 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.File({
       filename: 'error.log',
-      level: 'error'
+      level: 'error',
     }),
     new winston.transports.File({
       filename: 'debug.log',
-      level: 'debug'
-    })
-  ]
+      level: 'debug',
+    }),
+  ],
 });
 
-const textToUrl = (text, lang = 'en') =>
-  `https://translate.google.com/#view=home&op=translate&sl=auto&tl=${lang}&text=${encodeURIComponent(
-    text
-  )}`;
+const textToUrl = (text, lang = 'en') => `https://translate.google.com/#view=home&op=translate&sl=auto&tl=${lang}&text=${encodeURIComponent(
+  text,
+)}`;
 
-for (const token of tokens) {
+tokens.forEach((token) => {
   const bot = new Telegraf(token);
 
   (async () => {
     const browser = await puppeteer.launch({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true
+      headless: true,
     });
-    const translateText = async inText => {
+    const translateText = async (inText) => {
       if (!inText.trim().length) {
         return null;
       }
@@ -43,23 +42,18 @@ for (const token of tokens) {
       await page
         .goto(textToUrl(inText), {
           waitUntil: 'networkidle0',
-          timeout: 0
+          timeout: 0,
         })
         .catch(e => logger.error(e).then(translateText(inText)));
       await page.waitForFunction(
-        () =>
-          document.querySelector('span.tlid-translation') !== null &&
-          document
-            .querySelector('span.tlid-translation')
-            .innerText.indexOf('......') === -1
+        () => document.querySelector('span.tlid-translation') !== null
+          && document.querySelector('span.tlid-translation').innerText.indexOf('......') === -1,
       );
       const translation = await page.evaluate(() => {
-        const isNotSourceLang = (sourceLang, destLang) =>
-          !sourceLang.includes(destLang);
+        const isNotSourceLang = (sourceLang, destLang) => !sourceLang.includes(destLang);
         const extractLang = lang => lang.slice(0, lang.indexOf(' -')) || null;
-        const lang = document.querySelector(
-          'div.sl-sugg-button-container > div:first-child'
-        ).innerText;
+        const lang = document.querySelector('div.sl-sugg-button-container > div:first-child')
+          .innerText;
         if (lang === 'DETECT LANGUAGE') {
           return null;
         }
@@ -70,8 +64,7 @@ for (const token of tokens) {
             to: 'ENGLISH',
             text: `${
               document.querySelector('span.tlid-translation').innerText
-            }\n\nDetected language: ${langName.charAt(0) +
-              langName.slice(1).toLowerCase()}`
+            }\n\nDetected language: ${langName.charAt(0) + langName.slice(1).toLowerCase()}`,
           };
         }
         return null;
@@ -80,56 +73,53 @@ for (const token of tokens) {
       return translation;
     };
 
-    bot.on('text', ctx => {
+    bot.on('text', (ctx) => {
       translateText(ctx.message.text)
-        .then(translation => {
+        .then((translation) => {
           if (translation) {
             ctx
-              .replyWithMarkdown(
-                translation.text,
-                Extra.inReplyTo(ctx.message.message_id)
-              )
+              .replyWithMarkdown(translation.text, Extra.inReplyTo(ctx.message.message_id))
               .catch(e => logger.error(e));
           }
         })
         .catch(e => logger.error(e));
     });
 
-    bot.on('inline_query', ctx => {
+    bot.on('inline_query', (ctx) => {
       translateText(ctx.inlineQuery.query)
         .catch(e => logger.error(e))
-        .then(translation => {
+        .then((translation) => {
           if (translation) {
             ctx.answerInlineQuery([
               {
                 type: 'article',
                 id: 0,
-                title: `Translation (${titleCase(
-                  translation.from
-                )} => ${titleCase(translation.to)})`,
+                title: `Translation (${titleCase(translation.from)} => ${titleCase(
+                  translation.to,
+                )})`,
                 description: translation.text,
                 input_message_content: {
                   message_text: translation.text,
-                  parse_mode: Extra.markdown
-                }
+                  parse_mode: Extra.markdown,
+                },
               },
               {
                 type: 'article',
                 id: 1,
                 title: 'Translation - with translated text',
-                description: `Sends translated text, translation, and detected language.`,
+                description: 'Sends translated text, translation, and detected language.',
                 input_message_content: {
-                  message_text: `*Original*: ${
-                    ctx.inlineQuery.query
-                  }\n*Translation*: ${translation.text}`,
-                  parse_mode: 'Markdown'
-                }
-              }
+                  message_text: `*Original*: ${ctx.inlineQuery.query}\n*Translation*: ${
+                    translation.text
+                  }`,
+                  parse_mode: 'Markdown',
+                },
+              },
             ]);
           } else {
             ctx.answerInlineQuery([], {
               switch_pm_text: 'No translation found for inputted text.',
-              switch_pm_parameter: 'no_trans_inline'
+              switch_pm_parameter: 'no_trans_inline',
             });
           }
         })
@@ -138,4 +128,4 @@ for (const token of tokens) {
 
     bot.startPolling();
   })();
-}
+});
