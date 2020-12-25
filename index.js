@@ -1,7 +1,6 @@
 require('dotenv').config();
 const Telegraf = require('telegraf');
 const Extra = require('telegraf/extra');
-const puppeteer = require('puppeteer');
 const winston = require('winston');
 const { titleCase } = require('title-case');
 const translate = require('@vitalets/google-translate-api');
