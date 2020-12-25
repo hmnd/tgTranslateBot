@@ -33,13 +33,14 @@ tokens.forEach((token) => {
 
       if (translation && translation.from.language.iso !== translateTo) {
         const fromLang = translation.from.language.iso;
-        return ctx.replyWithMarkdown(
+        return ctx.replyWithHTML(
           `${translation.text}\n\nDetected language: ${
             languages[fromLang] || fromLang
           }`,
           Extra.inReplyTo(ctx.message.message_id)
         );
       }
+      return null;
     } catch (e) {
       logger.error(e);
     }
@@ -71,7 +72,7 @@ tokens.forEach((token) => {
             description: translation.text,
             input_message_content: {
               message_text: translation.text,
-              parse_mode: Extra.markdown,
+              parse_mode: Extra.HTML,
             },
           },
           {
@@ -82,7 +83,7 @@ tokens.forEach((token) => {
               'Sends translated text, translation, and detected language.',
             input_message_content: {
               message_text: `*Original*: ${ctx.inlineQuery.query}\n*Translation*: ${translation.text}`,
-              parse_mode: 'Markdown',
+              parse_mode: Extra.HTML,
             },
           },
         ]);
