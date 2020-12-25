@@ -28,9 +28,10 @@ tokens.forEach((token) => {
 
   bot.on('text', async (ctx) => {
     try {
+      const translateTo = 'en';
       const translation = await translate(ctx.message.text, { to: 'en' });
 
-      if (translation) {
+      if (translation && translation.from.language.iso !== translateTo) {
         return ctx.replyWithMarkdown(
           translation.text,
           Extra.inReplyTo(ctx.message.message_id)
