@@ -32,8 +32,11 @@ tokens.forEach((token) => {
       const translation = await translate(ctx.message.text, { to: 'en' });
 
       if (translation && translation.from.language.iso !== translateTo) {
+        const fromLang = translation.from.language.iso;
         return ctx.replyWithMarkdown(
-          translation.text,
+          `${translation.text}\n\nDetected language: ${
+            languages[fromLang] || fromLang
+          }`,
           Extra.inReplyTo(ctx.message.message_id)
         );
       }
@@ -57,13 +60,14 @@ tokens.forEach((token) => {
       });
       console.log(languages[translateTo]);
       if (translation) {
+        const fromLang = translation.from.language.iso;
         return ctx.answerInlineQuery([
           {
             type: 'article',
             id: 0,
-            title: `Translation (${titleCase(
-              languages[translation.from.language.iso]
-            )} => ${titleCase(languages[translateTo])})`,
+            title: `Translation (${languages[fromLang] || fromLang} => ${
+              languages[translateTo]
+            })`,
             description: translation.text,
             input_message_content: {
               message_text: translation.text,
@@ -88,7 +92,6 @@ tokens.forEach((token) => {
         switch_pm_parameter: 'no_trans_inline',
       });
     } catch (e) {
-      console.log(e);
       logger.error(e);
     }
   });
